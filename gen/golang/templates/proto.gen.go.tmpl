@@ -17,6 +17,7 @@ import (
   "errors"
   "io"
   "net/url"
+  {{if importTypesPkgPath }}"{{importTypesPkgPath}}"{{end}}
 )
 
 // WebRPC description and code-gen version
@@ -34,7 +35,11 @@ func WebRPCSchemaHash() string {
   return "{{.SchemaHash}}"
 }
 
-{{template "types" .}}
+{{if importTypesPkgPath}}
+  {{template "import_types" .}}
+{{else}}
+  {{template "types" .}}
+{{end}}
 
 {{if .TargetOpts.Server}}
   {{template "server" .}}

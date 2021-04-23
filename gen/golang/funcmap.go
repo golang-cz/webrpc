@@ -3,10 +3,12 @@ package golang
 import (
 	"errors"
 	"fmt"
+	"path/filepath"
 	"sort"
 	"strconv"
 	"strings"
 
+	"github.com/webrpc/webrpc/gen"
 	"github.com/webrpc/webrpc/schema"
 )
 
@@ -311,7 +313,26 @@ func hasFieldType(proto *schema.WebRPCSchema) func(fieldType string) (bool, erro
 	}
 }
 
-func templateFuncMap(proto *schema.WebRPCSchema) map[string]interface{} {
+func importTypesPkgPath(opts gen.TargetOptions) func() (string, error) {
+	importPath := opts.Extra
+
+	return func() (string, error) {
+		return importPath, nil
+	}
+}
+
+func importTypesPkgPrefix(opts gen.TargetOptions) func() (string, error) {
+	var pkgPrefix string
+	if len(opts.Extra) > 0 {
+		pkgPrefix = filepath.Base(opts.Extra) + "."
+	}
+
+	return func() (string, error) {
+		return pkgPrefix, nil
+	}
+}
+
+func templateFuncMap(proto *schema.WebRPCSchema, opts gen.TargetOptions) map[string]interface{} {
 	return map[string]interface{}{
 		"serviceMethodName":     serviceMethodName,
 		"serviceMethodJSONName": serviceMethodJSONName,
@@ -337,5 +358,7 @@ func templateFuncMap(proto *schema.WebRPCSchema) map[string]interface{} {
 		"isEnum":                isEnum,
 		"exportedField":         exportedField,
 		"downcaseName":          downcaseName,
+		"importTypesPkgPath":    importTypesPkgPath(opts),
+		"importTypesPkgPrefix":  importTypesPkgPrefix(opts),
 	}
 }
