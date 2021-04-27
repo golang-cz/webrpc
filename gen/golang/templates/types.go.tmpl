@@ -51,15 +51,17 @@
     }
   {{end}}
   {{if .Type | isStruct  }}
-    type {{.Name}} struct {
-      {{- range .Fields}}
-        {{. | exportedField}} {{. | fieldOptional}}{{. | fieldTypeDef}} {{. | fieldTags}}
-      {{- end}}
-    }
+    {{if defineTypes}}
+      type {{.Name}} struct {
+        {{- range .Fields}}
+          {{. | exportedField}} {{. | fieldOptional}}{{. | fieldTypeDef}} {{. | fieldTags}}
+        {{- end}}
+      }
+    {{end}}
   {{end}}
 {{end}}
 {{end}}
-{{if .Services}}
+{{if defineTypes}}
   {{range .Services}}
     type {{.Name}} interface {
       {{- range .Methods}}

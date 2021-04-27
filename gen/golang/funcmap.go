@@ -3,7 +3,6 @@ package golang
 import (
 	"errors"
 	"fmt"
-	"path/filepath"
 	"sort"
 	"strconv"
 	"strings"
@@ -313,22 +312,11 @@ func hasFieldType(proto *schema.WebRPCSchema) func(fieldType string) (bool, erro
 	}
 }
 
-func importTypesPkgPath(opts gen.TargetOptions) func() (string, error) {
-	importPath := opts.Extra
+func defineTypes(opts gen.TargetOptions) func() (bool, error) {
+	defineTypes := opts.Extra != "noTypes"
 
-	return func() (string, error) {
-		return importPath, nil
-	}
-}
-
-func importTypesPkgPrefix(opts gen.TargetOptions) func() (string, error) {
-	var pkgPrefix string
-	if len(opts.Extra) > 0 {
-		pkgPrefix = filepath.Base(opts.Extra) + "."
-	}
-
-	return func() (string, error) {
-		return pkgPrefix, nil
+	return func() (bool, error) {
+		return defineTypes, nil
 	}
 }
 
@@ -358,7 +346,6 @@ func templateFuncMap(proto *schema.WebRPCSchema, opts gen.TargetOptions) map[str
 		"isEnum":                isEnum,
 		"exportedField":         exportedField,
 		"downcaseName":          downcaseName,
-		"importTypesPkgPath":    importTypesPkgPath(opts),
-		"importTypesPkgPrefix":  importTypesPkgPrefix(opts),
+		"defineTypes":           defineTypes(opts),
 	}
 }
