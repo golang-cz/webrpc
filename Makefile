@@ -42,3 +42,5 @@ dep-upgrade-all:
 	@GO111MODULE=on go get -u
 	@$(MAKE) dep
 
+docker-build:
+	docker build -t golangcz/webrpc:v0.1.0 .
