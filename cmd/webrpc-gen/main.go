@@ -36,19 +36,19 @@ func main() {
 	flags.Parse(os.Args[1:])
 
 	if *versionFlag {
-		fmt.Printf("webrpc %s\n", webrpc.VERSION)
+		fmt.Fprintf(os.Stderr, "webrpc %s\n", webrpc.VERSION)
 		os.Exit(0)
 	}
 
 	if *schemaFlag == "" {
-		fmt.Println("oops, you must pass a -schema flag, see -h for help/usage")
+		fmt.Fprintln(os.Stderr, "oops, you must pass a -schema flag, see -h for help/usage")
 		os.Exit(1)
 	}
 
 	// Parse+validate the webrpc schema file
 	schema, err := webrpc.ParseSchemaFile(*schemaFlag)
 	if err != nil {
-		fmt.Println(err.Error())
+		fmt.Fprintln(os.Stderr, err.Error())
 		os.Exit(1)
 	}
 
@@ -56,29 +56,29 @@ func main() {
 	if *testFlag {
 		jout, err := schema.ToJSON(true)
 		if err != nil {
-			fmt.Println(err.Error())
+			fmt.Fprintln(os.Stderr, err.Error())
 			os.Exit(1)
 		}
-		fmt.Println(jout)
+		fmt.Fprintln(os.Stderr, jout)
 		os.Exit(0)
 	}
 
 	// Code-gen targets
 	if *targetFlag == "" {
-		fmt.Println("oops, you must pass a -target flag, see -h for help/usage")
+		fmt.Fprintln(os.Stderr, "oops, you must pass a -target flag, see -h for help/usage")
 		os.Exit(1)
 	}
 
 	targetLang := *targetFlag
 	if _, ok := gen.Generators[targetLang]; !ok {
-		fmt.Printf("oops, you passed an invalid -target flag, try one of registered generators: %s\n", targets)
+		fmt.Fprintf(os.Stderr, "oops, you passed an invalid -target flag, try one of registered generators: %s\n", targets)
 		os.Exit(1)
 	}
 
 	// Call our target code-generator
 	generator := gen.GetGenerator(*targetFlag)
 	if generator == nil {
-		fmt.Printf("error! unable to find generator for target '%s'\n", *targetFlag)
+		fmt.Fprintf(os.Stderr, "error! unable to find generator for target '%s'\n", *targetFlag)
 		os.Exit(1)
 	}
 
@@ -91,7 +91,7 @@ func main() {
 
 	protoGen, err := generator.Gen(schema, targetOpts)
 	if err != nil {
-		fmt.Println(err.Error())
+		fmt.Fprintln(os.Stderr, err.Error())
 		os.Exit(1)
 	}
 
@@ -100,7 +100,7 @@ func main() {
 		outfile := *outFlag
 		cwd, err := os.Getwd()
 		if err != nil {
-			fmt.Println(err.Error())
+			fmt.Fprintln(os.Stderr, err.Error())
 			os.Exit(1)
 		}
 		if outfile[0:1] != "/" {
@@ -111,14 +111,14 @@ func main() {
 		if _, err := os.Stat(outdir); os.IsNotExist(err) {
 			err := os.MkdirAll(outdir, 0755)
 			if err != nil {
-				fmt.Println(err.Error())
+				fmt.Fprintln(os.Stderr, err.Error())
 				os.Exit(1)
 			}
 		}
 
 		err = ioutil.WriteFile(outfile, []byte(protoGen), 0644)
 		if err != nil {
-			fmt.Println(err.Error())
+			fmt.Fprintln(os.Stderr, err.Error())
 			os.Exit(1)
 		}
 	} else {
