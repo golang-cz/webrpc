@@ -5,7 +5,6 @@ RUN apk add --update make bash git
 ADD ./ /webrpc
 
 WORKDIR /webrpc
-RUN go install github.com/goware/statik
 RUN go generate ./...
 RUN go build -o /usr/bin/gen ./cmd/webrpc-gen
 
