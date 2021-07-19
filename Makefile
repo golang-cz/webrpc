@@ -44,6 +44,6 @@ dep-upgrade-all:
 
 docker-build: VERSION=v0.1.1
 docker-build:
-	#docker build --platform linux/amd64 -t golangcz/webrpc:$(VERSION) .
-	#docker push golangcz/webrpc:$(VERSION)
-	docker build -t golangcz/webrpc:$(VERSION) .
+	docker build --platform linux/amd64 -t golangcz/webrpc:$(VERSION) .
+	docker push golangcz/webrpc:$(VERSION)
+	#docker build -t golangcz/webrpc:$(VERSION) .
