@@ -60,7 +60,7 @@ func ParseSchemaFile(schemaFilePath string) (*schema.WebRPCSchema, error) {
 		goParser := golang.NewParser(schema.NewReader(fp, path))
 		s, err := goParser.Parse(path)
 		if err != nil {
-			return nil, errors.Wrap(err, "failed to parse Go schema")
+			return nil, errors.Wrapf(err, "failed to parse schema from %v", filepath.Base(path))
 		}
 
 		return s, nil
